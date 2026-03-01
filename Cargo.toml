@@ -20,3 +20,7 @@ huddletalk-infrastructure = { path = "crates/huddletalk-infrastructure", version
 tokio = { workspace = true }
 huddletalk-application = { workspace = true }
 huddletalk-infrastructure = { workspace = true }
+
+[profile.dev.package."*"]
+opt-level = 3
+debug = false
