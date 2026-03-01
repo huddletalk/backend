@@ -1,0 +1,22 @@
+[package]
+name = "huddletalk-backend"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+members = [
+    "crates/huddletalk-application",
+    "crates/huddletalk-domain",
+    "crates/huddletalk-infrastructure",
+]
+
+[workspace.dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+huddletalk-application = { path = "crates/huddletalk-application", version = "0.1.0" }
+huddletalk-domain = { path = "crates/huddletalk-domain", version = "0.1.0" }
+huddletalk-infrastructure = { path = "crates/huddletalk-infrastructure", version = "0.1.0" }
+
+[dependencies]
+tokio = { workspace = true }
+huddletalk-application = { workspace = true }
+huddletalk-infrastructure = { workspace = true }
