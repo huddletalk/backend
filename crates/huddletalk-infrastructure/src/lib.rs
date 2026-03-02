@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use huddletalk_domain::{DomainError, Room, RoomId, RoomRepository};
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct InMemoryRoomRepository {
     rooms: HashMap<RoomId, Room>,
 }

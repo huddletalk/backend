@@ -1,3 +1,33 @@
 # backend
 
-The server part of huddletalk. It contains rust code for the server, as well as some documentation and resources for developers working on the server. The backend is a tokio server that handles the websocket connections from the app, and manages the state of the rooms and users. It also handles the audio processing and streaming for the app, and much more. The backend is a crucial part of huddletalk, and is responsible for the core functionality of the app.
+Tokio + Axum backend for HuddleTalk.
+
+## What it does
+
+- Serves `GET /rooms` from an in-memory room repository (seeded at startup).
+- Accepts WebSocket signaling at `GET /signal`.
+- Hosts a room-based SFU that accepts WebRTC peer connections and forwards RTP audio tracks between peers in the same room.
+
+## Run
+
+```bash
+cargo run
+```
+
+The server listens on `http://0.0.0.0:8080`.
+
+## Signaling protocol (JSON over `/signal`)
+
+- Client -> server:
+  - `{"type":"join","room_id":"lobby"}`
+  - `{"type":"offer","sdp":"..."}`
+  - `{"type":"answer","sdp":"..."}`
+  - `{"type":"ice_candidate","candidate":"...","sdp_mid":"0","sdp_mline_index":0}`
+- Server -> client:
+  - `{"type":"joined","peer_id":"...","room_id":"lobby"}`
+  - `{"type":"answer","sdp":"..."}`
+  - `{"type":"offer","sdp":"..."}`
+  - `{"type":"ice_candidate","candidate":"...","sdp_mid":"0","sdp_mline_index":0}`
+  - `{"type":"peer_joined","peer_id":"..."}`
+  - `{"type":"peer_left","peer_id":"..."}`
+  - `{"type":"error","message":"..."}`
