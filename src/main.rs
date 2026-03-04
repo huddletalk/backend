@@ -1,4 +1,5 @@
 mod sfu;
+mod transcription;
 
 use std::{net::SocketAddr, sync::Arc};
 
