@@ -10,6 +10,7 @@ env:
   CARGO_TERM_COLOR: always
   CARGO_HOME: ${{ github.workspace }}/.cargo
   RUST_BACKTRACE: 1
+  CMAKE_POLICY_VERSION_MINIMUM: 3.5
 
 permissions:
   contents: read
@@ -24,6 +25,17 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install native build dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            build-essential \
+            clang \
+            cmake \
+            libopus-dev \
+            pkg-config
+          rm -rf /var/lib/apt/lists/*
 
       - name: Install Rust components
         run: rustup component add rustfmt clippy
@@ -62,6 +74,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install native build dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            build-essential \
+            clang \
+            cmake \
+            libopus-dev \
+            pkg-config
+          rm -rf /var/lib/apt/lists/*
+
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
@@ -92,6 +115,17 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install native build dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            build-essential \
+            clang \
+            cmake \
+            libopus-dev \
+            pkg-config
+          rm -rf /var/lib/apt/lists/*
 
       - name: Cache cargo registry
         uses: actions/cache@v4

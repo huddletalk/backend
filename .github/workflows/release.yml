@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+env:
+  CMAKE_POLICY_VERSION_MINIMUM: 3.5
+
 permissions:
   contents: write
 
@@ -67,6 +70,17 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install native build dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            build-essential \
+            clang \
+            cmake \
+            libopus-dev \
+            pkg-config
+          rm -rf /var/lib/apt/lists/*
 
       - name: Build release
         run: cargo build --release --workspace
