@@ -29,6 +29,8 @@ use webrtc::{
     },
 };
 
+use crate::transcription::{LocalTranscriber, TrackAudioTranscriber, TranscriptIdentity};
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 enum ClientSignal {
@@ -106,6 +108,7 @@ struct ForwardedTrack {
 pub struct Sfu {
     api: API,
     rooms: RwLock<HashMap<String, RoomState>>,
+    transcriber: Option<Arc<LocalTranscriber>>,
 }
 
 impl Sfu {
@@ -124,9 +127,12 @@ impl Sfu {
             .with_interceptor_registry(registry)
             .build();
 
+        let transcriber = LocalTranscriber::from_env()?;
+
         Ok(Self {
             api,
             rooms: RwLock::new(HashMap::new()),
+            transcriber,
         })
     }
 
@@ -281,6 +287,29 @@ impl Sfu {
         let source_peer_id_for_log = source_peer.id.clone();
         let track_id_for_log = track_id.clone();
         let codec_for_log = forwarded.codec.mime_type.clone();
+        let codec_channels_for_log = forwarded.codec.channels;
+        let mut track_transcriber = self.transcriber.as_ref().and_then(|transcriber| {
+            let identity = TranscriptIdentity {
+                room_id: room_id_for_log.clone(),
+                peer_id: source_peer_id_for_log.clone(),
+                track_id: track_id_for_log.clone(),
+            };
+            match TrackAudioTranscriber::new(
+                transcriber.clone(),
+                identity,
+                codec_channels_for_log,
+            ) {
+                Ok(track_transcriber) => Some(track_transcriber),
+                Err(err) => {
+                    warn!(
+                        "failed to initialize track transcriber room='{}' peer='{}' track='{}': {err}",
+                        room_id_for_log, source_peer_id_for_log, track_id_for_log
+                    );
+                    None
+                }
+            }
+        });
+
         tokio::spawn(async move {
             let mut packets_received: u64 = 0;
             let mut payload_bytes_received: u64 = 0;
@@ -291,13 +320,18 @@ impl Sfu {
                 packets_received += 1;
                 payload_bytes_received += packet.payload.len() as u64;
 
+                if let Some(track_transcriber) = track_transcriber.as_mut() {
+                    track_transcriber.ingest_opus_payload(&packet.payload);
+                }
+
                 if last_receive_log.elapsed() >= receive_log_interval {
                     info!(
-                        "receiving RTP room='{}' peer='{}' track='{}' codec='{}' packets={} payload_bytes={}",
+                        "receiving RTP room='{}' peer='{}' track='{}' codec='{}' channels={} packets={} payload_bytes={}",
                         room_id_for_log,
                         source_peer_id_for_log,
                         track_id_for_log,
                         codec_for_log,
+                        codec_channels_for_log,
                         packets_received,
                         payload_bytes_received
                     );
@@ -310,6 +344,10 @@ impl Sfu {
                         warn!("failed to forward RTP packet to sink: {err}");
                     }
                 }
+            }
+
+            if let Some(track_transcriber) = track_transcriber.as_mut() {
+                track_transcriber.finish();
             }
 
             sfu.remove_track(&source_peer.room_id, &track_id).await;

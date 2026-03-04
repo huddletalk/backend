@@ -21,6 +21,8 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 uuid = { version = "1.18", features = ["v4"] }
 webrtc = "0.14"
+opus = "0.3"
+whisper-rs = "0.12"
 huddletalk-application = { path = "crates/huddletalk-application", version = "0.1.0" }
 huddletalk-domain = { path = "crates/huddletalk-domain", version = "0.1.0" }
 huddletalk-infrastructure = { path = "crates/huddletalk-infrastructure", version = "0.1.0" }
@@ -36,6 +38,8 @@ tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 uuid = { workspace = true }
 webrtc = { workspace = true }
+opus = { workspace = true }
+whisper-rs = { workspace = true }
 huddletalk-application = { workspace = true }
 huddletalk-domain = { workspace = true }
 huddletalk-infrastructure = { workspace = true }
