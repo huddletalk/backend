@@ -1,0 +1,5 @@
+[env]
+# CMake 4 dropped compatibility with projects declaring very old minimum versions.
+CMAKE_POLICY_VERSION_MINIMUM = "3.5"
+# Work around Meson debug libc++ flags that are incompatible with current Xcode libc++.
+MESON_ARGS = "--buildtype release -Db_ndebug=true"
