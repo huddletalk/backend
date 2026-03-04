@@ -34,8 +34,13 @@ jobs:
             clang \
             cmake \
             libopus-dev \
-            pkg-config
+            pkg-config \
+            python3 \
+            python3-pip
           rm -rf /var/lib/apt/lists/*
+
+      - name: Install Python invoke (preflight)
+        run: python3 -m pip install --upgrade --target /tmp/pip-invoke invoke
 
       - name: Install Rust components
         run: rustup component add rustfmt clippy
@@ -82,8 +87,13 @@ jobs:
             clang \
             cmake \
             libopus-dev \
-            pkg-config
+            pkg-config \
+            python3 \
+            python3-pip
           rm -rf /var/lib/apt/lists/*
+
+      - name: Install Python invoke (preflight)
+        run: python3 -m pip install --upgrade --target /tmp/pip-invoke invoke
 
       - name: Install rustfmt component
         run: rustup component add rustfmt
@@ -127,8 +137,13 @@ jobs:
             clang \
             cmake \
             libopus-dev \
-            pkg-config
+            pkg-config \
+            python3 \
+            python3-pip
           rm -rf /var/lib/apt/lists/*
+
+      - name: Install Python invoke (preflight)
+        run: python3 -m pip install --upgrade --target /tmp/pip-invoke invoke
 
       - name: Install rustfmt component
         run: rustup component add rustfmt
