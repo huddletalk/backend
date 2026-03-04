@@ -923,19 +923,13 @@ pub async fn handle_signal_socket(sfu: Arc<Sfu>, socket: WebSocket) {
 }
 
 fn opus_channel_count(rtp_parameters: &RtpParameters) -> Option<u16> {
-    rtp_parameters.codecs.iter().find_map(|codec| {
-        if let RtpCodecParameters::Audio {
+    rtp_parameters.codecs.iter().find_map(|codec| match codec {
+        RtpCodecParameters::Audio {
             mime_type,
             channels,
             ..
-        } = codec
-        {
-            if *mime_type == MimeTypeAudio::Opus {
-                return Some(channels.get() as u16);
-            }
-        }
-
-        None
+        } if *mime_type == MimeTypeAudio::Opus => Some(channels.get() as u16),
+        _ => None,
     })
 }
 
