@@ -85,6 +85,9 @@ jobs:
             pkg-config
           rm -rf /var/lib/apt/lists/*
 
+      - name: Install rustfmt component
+        run: rustup component add rustfmt
+
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
@@ -126,6 +129,9 @@ jobs:
             libopus-dev \
             pkg-config
           rm -rf /var/lib/apt/lists/*
+
+      - name: Install rustfmt component
+        run: rustup component add rustfmt
 
       - name: Cache cargo registry
         uses: actions/cache@v4

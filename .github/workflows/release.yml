@@ -82,6 +82,9 @@ jobs:
             pkg-config
           rm -rf /var/lib/apt/lists/*
 
+      - name: Install rustfmt component
+        run: rustup component add rustfmt
+
       - name: Build release
         run: cargo build --release --workspace
 
